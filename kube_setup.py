@@ -7,15 +7,15 @@ import tempfile
 DOCUMENTATION = '''
 ---
 module: kube_setup
-short_description: module make sure your kubernetes cluster has required object
+short_description: module makes sure your kubernetes cluster has required object
 '''
 
 EXAMPLES = '''
 - name: create k8s objects from file
   kube_setup:
     file: "object.yml"
-    state: "present" # default = "present"
-    strategy: "default" # default = default, means - use the most suitable
+    state: "present" # default = "present" [present|absent]
+    strategy: "default" # default = default, means - use the most suitable [create_or_replace|create_or_apply|create_or_nothing]
     kubectl_opts: "--context=live" # default = ""
 '''
 
@@ -225,7 +225,7 @@ def __object_exist(k_object_kind, k_object_name, k_object_namespace=None):
 def __create_object(doc):
     """
     Create k8s object
-    :param doc:
+    :param doc: dict
     :return bool
     """
     obj_file = __get_object_file(doc)
@@ -235,7 +235,7 @@ def __create_object(doc):
 def __apply_object(doc):
     """
     Apply k8s object
-    :param doc:
+    :param doc: dict
     :return bool
     """
     obj_file = __get_object_file(doc)
