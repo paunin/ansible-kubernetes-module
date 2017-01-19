@@ -49,7 +49,7 @@ STRATEGIES = {
     # 'replicationcontroller': STRATEGY_CREATE_OR_NOTHING,
     # 'resourcequota': STRATEGY_CREATE_OR_NOTHING,
     'cronjob': STRATEGY_CREATE_OR_NOTHING,
-    'scheduledjob': STRATEGY_CREATE_OR_NOTHING,
+    'scheduledjob': STRATEGY_CREATE_OR_REPLACE,
     'secret': STRATEGY_CREATE_OR_REPLACE,
     # 'serviceaccount': STRATEGY_CREATE_OR_NOTHING,
     'service': STRATEGY_CREATE_OR_APPLY,
