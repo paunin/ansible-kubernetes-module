@@ -43,7 +43,7 @@ STRATEGIES = {
     'statefulset': STRATEGY_CREATE_OR_APPLY,
     'persistentvolumeclaim': STRATEGY_CREATE_OR_NOTHING,
     'persistentvolume': STRATEGY_CREATE_OR_APPLY,
-    'pod': STRATEGY_CREATE_OR_APPLY,
+    'pod': STRATEGY_CREATE_OR_NOTHING,
     # 'podsecuritypolicy': STRATEGY_CREATE_OR_NOTHING,
     # 'podtemplate': STRATEGY_CREATE_OR_NOTHING,
     # 'replicaset': STRATEGY_CREATE_OR_NOTHING,
