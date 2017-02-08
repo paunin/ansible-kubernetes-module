@@ -39,7 +39,7 @@ STRATEGIES = {
     'namespace': STRATEGY_CREATE_OR_APPLY,
     # 'networkpolicies': STRATEGY_CREATE_OR_NOTHING,
     # 'node': STRATEGY_CREATE_OR_NOTHING,
-    'petset': STRATEGY_CREATE_OR_APPLY,
+    'petset': STRATEGY_CREATE_OR_NOTHING,
     'statefulset': STRATEGY_CREATE_OR_APPLY,
     'persistentvolumeclaim': STRATEGY_CREATE_OR_NOTHING,
     'persistentvolume': STRATEGY_CREATE_OR_APPLY,
