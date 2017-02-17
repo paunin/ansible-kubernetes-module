@@ -273,7 +273,7 @@ def __get_object_file(doc):
     """
     obj_file = tempfile.NamedTemporaryFile(delete=False)
     with open(obj_file.name, 'w') as outfile:
-        outfile.write(yaml.dump(doc))
+        outfile.write(yaml.dump(doc, default_style='"'))
         outfile.close()
     return obj_file.name
 
