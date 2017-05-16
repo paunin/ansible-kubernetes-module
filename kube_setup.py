@@ -216,7 +216,7 @@ def __object_exist(k_object_kind, k_object_name, k_object_namespace=None):
     """
     status, result = __kube_exec(
         "get " + k_object_kind + " " + k_object_name + (
-            ("--namespace=" + k_object_namespace) if k_object_namespace is not None else ""
+            (" --namespace=" + k_object_namespace) if k_object_namespace is not None else ""
         )
     )
 
