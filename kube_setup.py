@@ -91,17 +91,17 @@ def kube_objects_present(file_name, strategy):
 
         if __object_exist(k_object_kind, k_object_name, k_object_namespace)[0] == True:
             if current_strategy == STRATEGY_CREATE_OR_REPLACE:
-                success, output = __replace_object(doc)
+                success, output = __replace_object(doc, k_object_namespace)
                 changed = success
             elif current_strategy == STRATEGY_CREATE_OR_APPLY:
-                success, output = __apply_object(doc)
+                success, output = __apply_object(doc, k_object_namespace)
                 changed = success
             elif current_strategy == STRATEGY_CREATE_OR_NOTHING:
                 success = True
                 output = "Nothing to do with object"
 
         else:
-            success, output = __create_object(doc)
+            success, output = __create_object(doc, k_object_namespace)
 
         meta = {
             "status": success,
@@ -223,34 +223,34 @@ def __object_exist(k_object_kind, k_object_name, k_object_namespace=None):
     return status, result
 
 
-def __create_object(doc):
+def __create_object(doc, namespace=None):
     """
     Create k8s object
     :param doc: dict
     :return bool
     """
     obj_file = __get_object_file(doc)
-    return __kube_exec("create -f " + obj_file)
+    return __kube_exec("create -f " + obj_file, namespace)
 
 
-def __apply_object(doc):
+def __apply_object(doc, namespace=None):
     """
     Apply k8s object
     :param doc: dict
     :return bool
     """
     obj_file = __get_object_file(doc)
-    return __kube_exec("apply -f " + obj_file)
+    return __kube_exec("apply -f " + obj_file, namespace)
 
 
-def __replace_object(doc):
+def __replace_object(doc, namespace=None):
     """
     Replace k8s object
     :param doc:
     :return bool
     """
     obj_file = __get_object_file(doc)
-    return __kube_exec("replace -f " + obj_file)
+    return __kube_exec("replace -f " + obj_file, namespace)
 
 
 def __delete_object(kind, name, namespace):
@@ -261,7 +261,7 @@ def __delete_object(kind, name, namespace):
     :return:
     """
     return __kube_exec(
-        "delete " + kind + " " + name + ((" --namespace=" + namespace) if namespace is not None else "")
+        "delete " + kind + " " + name, namespace
     )
 
 
@@ -278,14 +278,20 @@ def __get_object_file(doc):
     return obj_file.name
 
 
-def __kube_exec(command):
+def __kube_exec(command, namespace=None):
     """
     Execute k8s command and return status and output
     :param command:
     :return: (status:bool, result:str)
     """
-    child = subprocess.Popen("kubectl " + (kubectl_options if kubectl_options else "") + " " + command, shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    child = subprocess.Popen(
+        "kubectl " + (kubectl_options if kubectl_options else "") + " " +
+        ((" --namespace=" + namespace + " ") if namespace is not None else "") +
+        command,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
     output, errors = child.communicate()
     status = True if child.returncode == 0 else False
     result = output if child.returncode == 0 else errors
