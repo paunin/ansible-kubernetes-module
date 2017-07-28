@@ -76,6 +76,8 @@ def kube_objects_present(file_name, strategy):
 
     metas = []
     doc_num = 0
+    any_error = False
+    any_change = False
     for doc in docs:
         error, k_object_kind, k_object_name, k_object_namespace = __extract_object_info(doc)
 
@@ -99,9 +101,14 @@ def kube_objects_present(file_name, strategy):
             elif current_strategy == STRATEGY_CREATE_OR_NOTHING:
                 success = True
                 output = "Nothing to do with object"
-
         else:
             success, output = __create_object(doc, k_object_namespace)
+
+        if any_error == False and success == False:
+            any_error = True
+
+        if any_change == False and changed == True:
+            any_change = True
 
         meta = {
             "status": success,
@@ -115,7 +122,7 @@ def kube_objects_present(file_name, strategy):
         metas.append(meta)
         doc_num = +1
 
-    return False if meta['status'] else True, changed, metas
+    return any_error, any_change, metas
 
 
 def kube_objects_absent(file_name):
