@@ -15,11 +15,13 @@ EXAMPLES = '''
   kube_setup:
     file: "object.yml"
     state: "present" # default = "present" [present|absent]
-    strategy: "default" # default = default, means - use the most suitable [create_or_replace|create_or_apply|create_or_nothing]
+    strategy: "default" # default = default, means - use the most suitable
+                        # [create_or_force_replace|create_or_replace|create_or_apply|create_or_nothing]
     kubectl_opts: "--context=live" # default = ""
 '''
 
 STRATEGY_DEFAULT = 'default'
+STRATEGY_CREATE_OR_FORCE_REPLACE = 'create_or_force_replace'
 STRATEGY_CREATE_OR_REPLACE = 'create_or_replace'
 STRATEGY_CREATE_OR_APPLY = 'create_or_apply'
 STRATEGY_CREATE_OR_NOTHING = 'create_or_nothing'
@@ -39,8 +41,8 @@ STRATEGIES = {
     'namespace': STRATEGY_CREATE_OR_APPLY,
     'networkpolicies': STRATEGY_CREATE_OR_NOTHING,
     'node': STRATEGY_CREATE_OR_NOTHING,
-    'petset': STRATEGY_CREATE_OR_NOTHING,
-    'statefulset': STRATEGY_CREATE_OR_APPLY,
+    'petset': STRATEGY_CREATE_OR_FORCE_REPLACE,
+    'statefulset': STRATEGY_CREATE_OR_FORCE_REPLACE,
     'persistentvolumeclaim': STRATEGY_CREATE_OR_NOTHING,
     'persistentvolume': STRATEGY_CREATE_OR_APPLY,
     'pod': STRATEGY_CREATE_OR_NOTHING,
@@ -92,7 +94,10 @@ def kube_objects_present(file_name, strategy):
         current_strategy = STRATEGIES[k_object_kind.lower()] if strategy == STRATEGY_DEFAULT else strategy
 
         if __object_exist(k_object_kind, k_object_name, k_object_namespace)[0] == True:
-            if current_strategy == STRATEGY_CREATE_OR_REPLACE:
+            if current_strategy == STRATEGY_CREATE_OR_FORCE_REPLACE:
+                success, output = __replace_object(doc, k_object_namespace, True)
+                changed = success
+            elif current_strategy == STRATEGY_CREATE_OR_REPLACE:
                 success, output = __replace_object(doc, k_object_namespace)
                 changed = success
             elif current_strategy == STRATEGY_CREATE_OR_APPLY:
@@ -250,14 +255,14 @@ def __apply_object(doc, namespace=None):
     return __kube_exec("apply -f " + obj_file, namespace)
 
 
-def __replace_object(doc, namespace=None):
+def __replace_object(doc, namespace=None, force=False):
     """
     Replace k8s object
     :param doc:
     :return bool
     """
     obj_file = __get_object_file(doc)
-    return __kube_exec("replace -f " + obj_file, namespace)
+    return __kube_exec("replace " + ("--force " if force else "") + "-f "  + obj_file, namespace)
 
 
 def __delete_object(kind, name, namespace):
