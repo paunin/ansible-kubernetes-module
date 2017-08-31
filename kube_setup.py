@@ -326,8 +326,7 @@ def main():
         },
         "strategy": {
             "default": STRATEGY_DEFAULT,
-            "choices": [STRATEGY_DEFAULT, STRATEGY_CREATE_OR_REPLACE, STRATEGY_CREATE_OR_APPLY,
-                        STRATEGY_CREATE_OR_NOTHING],
+            "choices": [STRATEGY_DEFAULT, STRATEGY_CREATE_OR_REPLACE, STRATEGY_CREATE_OR_APPLY, STRATEGY_CREATE_OR_NOTHING, STRATEGY_CREATE_OR_FORCE_REPLACE],
             "type": 'str'
         },
     }
